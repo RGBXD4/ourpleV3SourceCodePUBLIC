@@ -53,6 +53,8 @@ class Main extends Sprite
 	{
 		super();
 
+		Sys.setCwd(Path.addTrailingSlash(Context.getExternalFilesDir()));
+
 		if (stage != null)
 		{
 			init();

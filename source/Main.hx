@@ -20,7 +20,6 @@ import Discord.DiscordClient;
 #if CRASH_HANDLER
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
-import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
 import sys.io.Process;
@@ -29,6 +28,7 @@ import sys.io.Process;
 import android.content.Context;
 import android.os.Build;
 #end
+import haxe.io.Path;
 
 using StringTools;
 

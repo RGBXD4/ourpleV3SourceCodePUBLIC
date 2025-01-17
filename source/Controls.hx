@@ -10,7 +10,12 @@ import flixel.input.actions.FlxActionSet;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-
+#if mobile
+import mobile.flixel.FlxButton;
+import mobile.flixel.FlxHitbox;
+import mobile.flixel.FlxVirtualPad;
+#end
+	
 #if (haxe >= "4.0.0")
 enum abstract Action(String) to String from String
 {
@@ -379,6 +384,81 @@ class Controls extends FlxActionSet
 	}
 	#end
 
+	#if mobile
+		public var trackedInputsUI:Array<FlxActionInput> = [];
+		public var trackedInputsNOTES:Array<FlxActionInput> = [];
+
+		public function addButtonNOTES(action:FlxActionDigital, button:FlxButton, state:FlxInputState)
+		{
+			var input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state);
+			trackedInputsNOTES.push(input);
+			action.add(input);
+		}
+
+		public function addButtonUI(action:FlxActionDigital, button:FlxButton, state:FlxInputState)
+		{
+			var input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state);
+			trackedInputsUI.push(input);
+			action.add(input);
+		}
+
+		public function setHitBox(Hitbox:FlxHitbox)
+		{
+			inline forEachBound(Control.NOTE_UP, (action, state) -> addButtonNOTES(action, Hitbox.buttonUp, state));
+			inline forEachBound(Control.NOTE_DOWN, (action, state) -> addButtonNOTES(action, Hitbox.buttonDown, state));
+			inline forEachBound(Control.NOTE_LEFT, (action, state) -> addButtonNOTES(action, Hitbox.buttonLeft, state));
+			inline forEachBound(Control.NOTE_RIGHT, (action, state) -> addButtonNOTES(action, Hitbox.buttonRight, state));
+		}
+
+		public function setVirtualPadUI(VirtualPad:FlxVirtualPad, DPad:FlxDPadMode, Action:FlxActionMode)
+		{
+			switch (DPad)
+			{
+			    case UP_DOWN:
+				inline forEachBound(Control.UI_UP, (action, state) -> addButtonUI(action, VirtualPad.buttonUp, state));
+				inline forEachBound(Control.UI_DOWN, (action, state) -> addButtonUI(action, VirtualPad.buttonDown, state));
+				case LEFT_RIGHT:
+				inline forEachBound(Control.UI_LEFT, (action, state) -> addButtonUI(action, VirtualPad.buttonLeft, state));
+				inline forEachBound(Control.UI_RIGHT, (action, state) -> addButtonUI(action, VirtualPad.buttonRight, state));
+		           case FULL:
+				inline forEachBound(Control.UI_UP, (action, state) -> addButtonUI(action, VirtualPad.buttonUp, state));
+				inline forEachBound(Control.UI_DOWN, (action, state) -> addButtonUI(action, VirtualPad.buttonDown, state));
+	                  inline forEachBound(Control.UI_LEFT, (action, state) -> addButtonUI(action, VirtualPad.buttonLeft, state));
+				inline forEachBound(Control.UI_RIGHT, (action, state) -> addButtonUI(action, VirtualPad.buttonRight, state));
+			    case NONE: // do nothing
+			}
+
+			switch (Action)
+			{
+				case A:
+				inline forEachBound(Control.ACCEPT, (action, state) -> addButtonUI(action, VirtualPad.buttonA, state));
+				case B:
+				inline forEachBound(Control.BACK, (action, state) -> addButtonUI(action, VirtualPad.buttonB, state));
+				case A_B | A_B_C | A_B_X_Y:
+				inline forEachBound(Control.ACCEPT, (action, state) -> addButtonUI(action, VirtualPad.buttonA, state));
+				inline forEachBound(Control.BACK, (action, state) -> addButtonUI(action, VirtualPad.buttonB, state));
+				case NONE: // do nothing
+		    }
+		}
+
+		public function removeVirtualControlsInput(Tinputs:Array<FlxActionInput>)
+		{
+			for (action in this.digitalActions)
+			{
+			    var i = action.inputs.length;
+				while (i-- > 0)
+				{
+					var x = Tinputs.length;
+					while (x-- > 0)
+					{
+						if (Tinputs[x] == action.inputs[i])
+						action.remove(action.inputs[i]);
+					}
+				}
+			}
+		}
+	#end
+
 	override function update()
 	{
 		super.update();
@@ -580,35 +660,22 @@ class Controls extends FlxActionSet
 	 */
 	public function bindKeys(control:Control, keys:Array<FlxKey>)
 	{
-		var copyKeys:Array<FlxKey> = keys.copy();
-		for (i in 0...copyKeys.length) {
-			if(i == NONE) copyKeys.remove(i);
-		}
-
 		#if (haxe >= "4.0.0")
-		inline forEachBound(control, (action, state) -> addKeys(action, copyKeys, state));
+		inline forEachBound(control, (action, state) -> addKeys(action, keys, state));
 		#else
-		forEachBound(control, function(action, state) addKeys(action, copyKeys, state));
-		#end
+		forEachBound(control, function(action, state) addKeys(action, keys, state));
+		#end	
 	}
 
-	/**
-	 * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
-	 * If binder is a literal you can inline this
-	 */
 	public function unbindKeys(control:Control, keys:Array<FlxKey>)
 	{
-		var copyKeys:Array<FlxKey> = keys.copy();
-		for (i in 0...copyKeys.length) {
-			if(i == NONE) copyKeys.remove(i);
-		}
-
 		#if (haxe >= "4.0.0")
-		inline forEachBound(control, (action, _) -> removeKeys(action, copyKeys));
+		inline forEachBound(control, (action, _) -> removeKeys(action, keys));
 		#else
-		forEachBound(control, function(action, _) removeKeys(action, copyKeys));
-		#end
-	}
+		forEachBound(control, function(action, _) removeKeys(action, keys));
+		#end		
+	}	
+	#end
 
 	inline static function addKeys(action:FlxActionDigital, keys:Array<FlxKey>, state:FlxInputState)
 	{

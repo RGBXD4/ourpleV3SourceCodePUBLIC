@@ -249,6 +249,11 @@ class MainMenuState extends MusicBeatState
 		}
 		#end
 
+		#if android
+addMobileControls(LEFT_RIGHT, A_B);
+		#end
+
+
 		super.create();
 	}
 

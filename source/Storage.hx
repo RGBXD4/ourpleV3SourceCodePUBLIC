@@ -16,8 +16,8 @@ class Storage
 	public static function copyNecessaryFiles():Void
 	{
 		
-		#if sys
-		for (file in Assets.list().filter(folder -> folder.startsWith('ourplesecrets/images')))
+		#if MODS_ALLOWED
+		for (file in Assets.list().filter(folder -> folder.startsWith('assets/ourplesecrets/images')))
 		{
 			
 				// Ment for FNF's libraries system...
@@ -30,7 +30,7 @@ class Storage
 		}
 		#end
 
-		#if sys
+		#if MODS_ALLOWED
 		for (file in Assets.list().filter(folder -> folder.startsWith('assets/shaders')))
 		{
 			if (Path.extension(file) == 'frag')

@@ -116,18 +116,18 @@ class MusicBeatState extends FlxUIState
 			remove(mobileControls);
 		}
 
-		public function addVirtualPadCamera()
+		public function addVirtualPadCamera(DefaultDrawTarget:Bool = true)
 		{
 			if (virtualPad != null)
 			{
 				var camControls:FlxCamera = new FlxCamera();
-				FlxG.cameras.add(camControls, false);
+				FlxG.cameras.add(camControls, DefaultDrawTarget);
 				camControls.bgColor.alpha = 0;
 				virtualPad.cameras = [camControls];
 			}
 		}
 		#end
-
+			
 		override function destroy()
 		{
 			#if mobile

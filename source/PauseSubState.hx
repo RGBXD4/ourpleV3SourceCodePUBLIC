@@ -131,16 +131,13 @@ class PauseSubState extends MusicBeatSubstate
 			scaryFollowed.alpha = 0;
 		}
 
-
-
+#if android
+addVirtualPad(UP_DOWN, A);
+addVirtualPadCamera(false);
+#end
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
 		if (pauseCharacter.yesFriend) FlxG.mouse.visible = true;
-
-		#if android
-addVirtualPad(UP_DOWN, A);
-		addVirtualPadCamera(true);
-		#end
 
 	}
 

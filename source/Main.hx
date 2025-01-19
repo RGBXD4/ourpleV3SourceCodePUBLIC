@@ -59,7 +59,7 @@ class Main extends Sprite
 
 		Sys.setCwd(Path.addTrailingSlash(Context.getExternalFilesDir()));
 
-		Storage.copyNecessaryFiles();
+//		Storage.copyNecessaryFiles();
 
 		if (stage != null)
 		{
